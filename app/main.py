@@ -9,12 +9,15 @@ from app.database import (
     create_application,
     get_application,
     get_applications,
+    get_gap_analyses,
     get_resume,
     init_db,
+    save_gap_analysis,
     save_resume,
     update_application,
     update_application_status,
 )
+from app.gap_analysis import GapAnalysisError, run_gap_analysis
 from app.parsing import parse_resume_file
 from app.scraping import ScrapeError, scrape_job_posting
 
@@ -102,10 +105,50 @@ def application_detail(request: Request, application_id: int):
     application = get_application(application_id)
     if application is None:
         raise HTTPException(404, "Application not found")
+    gap_analyses = get_gap_analyses(application_id)
     return templates.TemplateResponse(
         "application_detail.html",
-        {"request": request, "application": application, "statuses": VALID_STATUSES},
+        {
+            "request": request,
+            "application": application,
+            "statuses": VALID_STATUSES,
+            "gap_analyses": gap_analyses,
+        },
     )
+
+
+@app.post("/applications/{application_id}/analyze")
+def analyze_application(request: Request, application_id: int):
+    application = get_application(application_id)
+    if application is None:
+        raise HTTPException(404, "Application not found")
+
+    resume = get_resume()
+    if resume is None:
+        raise HTTPException(400, "Upload a resume before running gap analysis.")
+
+    try:
+        result = run_gap_analysis(resume["raw_text"], application["job_description"])
+    except GapAnalysisError as exc:
+        gap_analyses = get_gap_analyses(application_id)
+        return templates.TemplateResponse(
+            "application_detail.html",
+            {
+                "request": request,
+                "application": application,
+                "statuses": VALID_STATUSES,
+                "gap_analyses": gap_analyses,
+                "analysis_error": str(exc),
+            },
+        )
+
+    save_gap_analysis(
+        application_id,
+        result.matched_keywords,
+        result.missing_keywords,
+        result.suggestions,
+    )
+    return RedirectResponse(url=f"/applications/{application_id}", status_code=303)
 
 
 @app.post("/applications/{application_id}/update")

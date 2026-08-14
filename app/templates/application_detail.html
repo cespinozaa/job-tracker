@@ -2,13 +2,25 @@
 {% block title %}{{ application.company }} - Job Tracker{% endblock %}
 {% block content %}
     <h1>{{ application.title }} at {{ application.company }}</h1>
-    <p><strong>Status:</strong> {{ application.status }}</p>
     <p><strong>Date Applied:</strong> {{ application.date_applied }}</p>
 
-    {% if application.notes %}
-        <h2>Notes</h2>
-        <p>{{ application.notes }}</p>
-    {% endif %}
+    <form action="/applications/{{ application.id }}/update" method="post">
+        <label>
+            Status
+            <select name="status">
+                {% for s in statuses %}
+                <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <br>
+        <label>
+            Notes
+            <textarea name="notes" rows="4">{{ application.notes or "" }}</textarea>
+        </label>
+        <br>
+        <button type="submit">Save</button>
+    </form>
 
     <h2>Job Description</h2>
     <pre>{{ application.job_description }}</pre>

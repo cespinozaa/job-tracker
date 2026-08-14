@@ -72,3 +72,36 @@ def save_resume(filename: str, raw_text: str) -> None:
     )
     conn.commit()
     conn.close()
+
+
+def create_application(
+    company: str, title: str, job_description: str, notes: str | None = None
+) -> int:
+    conn = get_connection()
+    cur = conn.execute(
+        "INSERT INTO applications (company, title, job_description, notes) "
+        "VALUES (?, ?, ?, ?)",
+        (company, title, job_description, notes),
+    )
+    conn.commit()
+    application_id = cur.lastrowid
+    conn.close()
+    return application_id
+
+
+def get_applications() -> list[sqlite3.Row]:
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM applications ORDER BY date_applied DESC, id DESC"
+    ).fetchall()
+    conn.close()
+    return rows
+
+
+def get_application(application_id: int) -> sqlite3.Row | None:
+    conn = get_connection()
+    row = conn.execute(
+        "SELECT * FROM applications WHERE id = ?", (application_id,)
+    ).fetchone()
+    conn.close()
+    return row

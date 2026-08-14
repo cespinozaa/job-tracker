@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Add Application - Job Tracker{% endblock %}
+{% block content %}
+    <h1>Add Application</h1>
+
+    <form action="/applications/new" method="post">
+        <label>
+            Company
+            <input type="text" name="company" required>
+        </label>
+        <br>
+        <label>
+            Title
+            <input type="text" name="title" required>
+        </label>
+        <br>
+        <label>
+            Job Description
+            <textarea name="job_description" rows="12" required></textarea>
+        </label>
+        <br>
+        <label>
+            Notes
+            <textarea name="notes" rows="4"></textarea>
+        </label>
+        <br>
+        <button type="submit">Save</button>
+    </form>
+{% endblock %}

@@ -1,5 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+from google.genai import errors
+
+from app.llm import LLMError, get_client
 
 USER_AGENT = "Mozilla/5.0 (compatible; JobTrackerBot/1.0)"
 REQUEST_TIMEOUT = 10
@@ -13,6 +16,19 @@ UNAVAILABLE_PHRASES = [
     "no longer accepting applications",
     "this job is no longer",
 ]
+
+CLEANUP_MODEL = "gemini-3.5-flash-lite"
+
+CLEANUP_PROMPT = (
+    "The following text was scraped from a job posting webpage. It may mix "
+    "generic company boilerplate (About Us, EEO statements, hiring process "
+    "overviews, legal notices) in with the actual role description. Return only "
+    "the parts relevant to the role itself: the job description, "
+    "responsibilities, and qualifications/requirements. Preserve the original "
+    "wording exactly — remove irrelevant sections, don't summarize or rephrase "
+    "what you keep. If nothing looks removable, return the text unchanged, with "
+    "no extra commentary.\n\nSCRAPED TEXT:\n{text}"
+)
 
 
 class ScrapeError(Exception):
@@ -83,3 +99,26 @@ def _extract_description(soup: BeautifulSoup) -> str:
 def _looks_unavailable(description: str) -> bool:
     lowered = description.lower()
     return any(phrase in lowered for phrase in UNAVAILABLE_PHRASES)
+
+
+def clean_job_description(raw_text: str) -> str:
+    """
+    Uses the LLM to strip company boilerplate from scraped posting text.
+    Falls back to the raw text (no error raised) if no API key is configured
+    or the request fails, so scraping keeps working without an LLM available.
+    """
+    try:
+        client = get_client()
+    except LLMError:
+        return raw_text
+
+    try:
+        response = client.models.generate_content(
+            model=CLEANUP_MODEL,
+            contents=CLEANUP_PROMPT.format(text=raw_text),
+        )
+    except errors.APIError:
+        return raw_text
+
+    cleaned = response.text.strip() if response.text else ""
+    return cleaned or raw_text

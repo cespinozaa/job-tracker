@@ -21,7 +21,7 @@ from app.database import (
 )
 from app.gap_analysis import GapAnalysisError, run_gap_analysis
 from app.parsing import parse_resume_file
-from app.scraping import ScrapeError, scrape_job_posting
+from app.scraping import ScrapeError, clean_job_description, scrape_job_posting
 
 BASE_DIR = Path(__file__).parent
 
@@ -127,7 +127,7 @@ def scrape_application_url(request: Request, url: str = Form(...)):
         url=url,
         company=scraped["company"],
         title=scraped["title"],
-        job_description=scraped["job_description"],
+        job_description=clean_job_description(scraped["job_description"]),
         scraped=True,
     )
 

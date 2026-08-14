@@ -96,11 +96,18 @@ def create_application(
     return application_id
 
 
-def get_applications() -> list[sqlite3.Row]:
+def get_applications(status: str | None = None) -> list[sqlite3.Row]:
     conn = get_connection()
-    rows = conn.execute(
-        "SELECT * FROM applications ORDER BY date_applied DESC, id DESC"
-    ).fetchall()
+    if status:
+        rows = conn.execute(
+            "SELECT * FROM applications WHERE status = ? "
+            "ORDER BY date_applied DESC, id DESC",
+            (status,),
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT * FROM applications ORDER BY date_applied DESC, id DESC"
+        ).fetchall()
     conn.close()
     return rows
 

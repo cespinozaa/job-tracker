@@ -39,24 +39,41 @@ def health_check():
     return {"status": "ok"}
 
 
+def _safe_redirect(url: str, default: str = "/") -> str:
+    """Only allow redirecting to a local path, never an external URL."""
+    if url.startswith("/") and not url.startswith("//"):
+        return url
+    return default
+
+
 @app.get("/")
-def list_applications(request: Request):
-    applications = get_applications()
+def list_applications(request: Request, status: str | None = None):
+    if status is not None and status not in VALID_STATUSES:
+        raise HTTPException(400, "Invalid status filter")
+
+    applications = get_applications(status)
     return templates.TemplateResponse(
         "index.html",
-        {"request": request, "applications": applications, "statuses": VALID_STATUSES},
+        {
+            "request": request,
+            "applications": applications,
+            "statuses": VALID_STATUSES,
+            "selected_status": status,
+        },
     )
 
 
 @app.post("/applications/{application_id}/status")
-def update_status_route(application_id: int, status: str = Form(...)):
+def update_status_route(
+    application_id: int, status: str = Form(...), redirect_to: str = Form("/")
+):
     if get_application(application_id) is None:
         raise HTTPException(404, "Application not found")
     if status not in VALID_STATUSES:
         raise HTTPException(400, "Invalid status")
 
     update_application_status(application_id, status)
-    return RedirectResponse(url="/", status_code=303)
+    return RedirectResponse(url=_safe_redirect(redirect_to), status_code=303)
 
 
 @app.get("/applications/new")

@@ -27,16 +27,28 @@
     --accent-soft: #e4ede9;
     --accent-soft-line: #cadbd3;
 
-    --st-applied: #46617d;
-    --st-applied-bg: #e9eef3;
-    --st-interviewing: #a8792a;
-    --st-interviewing-bg: #f5ecd8;
-    --st-offer: #2f7a4f;
-    --st-offer-bg: #e0f0e5;
-    --st-rejected: #a44b3f;
-    --st-rejected-bg: #f5e3df;
-    --st-ghosted: #7c7869;
-    --st-ghosted-bg: #ece9de;
+    --st-applied: #194880;
+    --st-applied-bg: #e5effa;
+    --st-completed_oa: #106949;
+    --st-completed_oa-bg: #e4f5ef;
+    --st-interviewing: #8e6100;
+    --st-interviewing-bg: #fdf4e0;
+    --st-pending: #8b4a62;
+    --st-pending-bg: #fceff4;
+    --st-offer: #004f00;
+    --st-offer-bg: #e0f0e0;
+    --st-rejected: #882c2b;
+    --st-rejected-bg: #fce9e9;
+    --st-ghosted: #2c2364;
+    --st-ghosted-bg: #e9e7f4;
+
+    --chart-applied: #2a78d6;
+    --chart-completed_oa: #1baf7a;
+    --chart-interviewing: #eda100;
+    --chart-pending: #e87ba4;
+    --chart-offer: #008300;
+    --chart-rejected: #e34948;
+    --chart-ghosted: #4a3aa7;
 
     --shadow-card: 0 1px 2px rgba(33, 31, 26, 0.04), 0 6px 20px -8px rgba(33, 31, 26, 0.10);
     --shadow-pop: 0 8px 30px -6px rgba(33, 31, 26, 0.18);
@@ -59,16 +71,28 @@
         --accent-soft: #253530;
         --accent-soft-line: #375349;
 
-        --st-applied: #8fb0cf;
-        --st-applied-bg: #232d38;
-        --st-interviewing: #e0b46a;
-        --st-interviewing-bg: #362c1a;
-        --st-offer: #7ecb9a;
-        --st-offer-bg: #1d3327;
-        --st-rejected: #e29483;
-        --st-rejected-bg: #3a231e;
-        --st-ghosted: #a8a394;
-        --st-ghosted-bg: #2c2a24;
+        --st-applied: #78aded;
+        --st-applied-bg: #29394b;
+        --st-completed_oa: #63bd9e;
+        --st-completed_oa-bg: #223e32;
+        --st-interviewing: #daac52;
+        --st-interviewing-bg: #483919;
+        --st-pending: #e289a9;
+        --st-pending-bg: #4b2d35;
+        --st-offer: #52ab52;
+        --st-offer-bg: #1c3819;
+        --st-rejected: #ee9898;
+        --st-rejected-bg: #4f3230;
+        --st-ghosted: #b4acf0;
+        --st-ghosted-bg: #3c394c;
+
+        --chart-applied: #3987e5;
+        --chart-completed_oa: #199e70;
+        --chart-interviewing: #c98500;
+        --chart-pending: #d55181;
+        --chart-offer: #008300;
+        --chart-rejected: #e66767;
+        --chart-ghosted: #9085e9;
 
         --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 24px -8px rgba(0, 0, 0, 0.4);
         --shadow-pop: 0 8px 30px -6px rgba(0, 0, 0, 0.5);
@@ -88,16 +112,28 @@
     --accent-soft: #253530;
     --accent-soft-line: #375349;
 
-    --st-applied: #8fb0cf;
-    --st-applied-bg: #232d38;
-    --st-interviewing: #e0b46a;
-    --st-interviewing-bg: #362c1a;
-    --st-offer: #7ecb9a;
-    --st-offer-bg: #1d3327;
-    --st-rejected: #e29483;
-    --st-rejected-bg: #3a231e;
-    --st-ghosted: #a8a394;
-    --st-ghosted-bg: #2c2a24;
+    --st-applied: #78aded;
+    --st-applied-bg: #29394b;
+    --st-completed_oa: #63bd9e;
+    --st-completed_oa-bg: #223e32;
+    --st-interviewing: #daac52;
+    --st-interviewing-bg: #483919;
+    --st-pending: #e289a9;
+    --st-pending-bg: #4b2d35;
+    --st-offer: #52ab52;
+    --st-offer-bg: #1c3819;
+    --st-rejected: #ee9898;
+    --st-rejected-bg: #4f3230;
+    --st-ghosted: #b4acf0;
+    --st-ghosted-bg: #3c394c;
+
+    --chart-applied: #3987e5;
+    --chart-completed_oa: #199e70;
+    --chart-interviewing: #c98500;
+    --chart-pending: #d55181;
+    --chart-offer: #008300;
+    --chart-rejected: #e66767;
+    --chart-ghosted: #9085e9;
 
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 24px -8px rgba(0, 0, 0, 0.4);
     --shadow-pop: 0 8px 30px -6px rgba(0, 0, 0, 0.5);
@@ -240,6 +276,10 @@ main.main {
     max-width: 900px;
 }
 
+main.main.main-wide {
+    max-width: 1180px;
+}
+
 /* ---------- Page head ---------- */
 
 .page-head {
@@ -325,7 +365,6 @@ h1.title {
     background: var(--surface);
     color: var(--ink-soft);
     text-decoration: none;
-    text-transform: capitalize;
     transition: all .12s ease;
 }
 
@@ -424,7 +463,6 @@ select.status-select {
     padding: 5px 26px 5px 11px;
     border-radius: var(--radius-chip);
     border: none;
-    text-transform: capitalize;
     white-space: nowrap;
     appearance: none;
     cursor: pointer;
@@ -434,7 +472,9 @@ select.status-select {
 }
 
 .status-applied { color: var(--st-applied); background-color: var(--st-applied-bg); }
+.status-completed_oa { color: var(--st-completed_oa); background-color: var(--st-completed_oa-bg); }
 .status-interviewing { color: var(--st-interviewing); background-color: var(--st-interviewing-bg); }
+.status-pending { color: var(--st-pending); background-color: var(--st-pending-bg); }
 .status-offer { color: var(--st-offer); background-color: var(--st-offer-bg); }
 .status-rejected { color: var(--st-rejected); background-color: var(--st-rejected-bg); }
 .status-ghosted { color: var(--st-ghosted); background-color: var(--st-ghosted-bg); }
@@ -447,6 +487,59 @@ select.status-select {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-card);
+}
+
+/* ---------- List layout + pipeline overview ---------- */
+
+.list-layout {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.list-primary {
+    flex: 1 1 480px;
+    min-width: 0;
+}
+
+.list-insights {
+    flex: 0 1 300px;
+    min-width: 260px;
+    position: sticky;
+    top: 24px;
+}
+
+.flow-card .section-heading {
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.flow-card .subtitle {
+    margin-bottom: 14px;
+}
+
+.flow-svg text {
+    font-family: 'Manrope', sans-serif;
+}
+
+.flow-label {
+    font-size: 11px;
+    font-weight: 600;
+    fill: var(--ink-soft);
+}
+
+.flow-count {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+}
+
+.flow-total-label {
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--ink);
 }
 
 /* ---------- Detail screen ---------- */
@@ -766,5 +859,9 @@ textarea {
     }
     .app-date {
         width: auto;
+    }
+    .list-insights {
+        position: static;
+        flex-basis: 100%;
     }
 }

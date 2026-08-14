@@ -15,39 +15,68 @@
         </a>
     </div>
 
-    <div class="filters">
-        <a href="/" class="filter-pill {{ 'active' if not selected_status }}">All <span>{{ total_count }}</span></a>
-        {% for s in statuses %}
-        <a href="/?status={{ s }}" class="filter-pill {{ 'active' if s == selected_status }}">{{ s }} <span>{{ status_counts[s] }}</span></a>
-        {% endfor %}
-    </div>
-
-    {% if applications %}
-        <div class="app-list">
-            {% for application in applications %}
-            <div class="app-row">
-                <div class="app-avatar">{{ application.company[0]|upper }}</div>
-                <div class="app-main-info">
-                    <a class="app-company" href="/applications/{{ application.id }}">{{ application.company }}</a>
-                    <div class="app-title-text">{{ application.title }}</div>
-                </div>
-                <div class="status-select-wrap">
-                    <form action="/applications/{{ application.id }}/status" method="post">
-                        <input type="hidden" name="redirect_to" value="{{ '/?status=' + selected_status if selected_status else '/' }}">
-                        <select name="status" class="status-select status-{{ application.status }}" onchange="this.className = 'status-select status-' + this.value; this.form.submit()">
-                            {% for s in statuses %}
-                            <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
-                            {% endfor %}
-                        </select>
-                    </form>
-                </div>
-                <div class="app-date">{{ application.date_applied }}</div>
+    <div class="list-layout">
+        <div class="list-primary">
+            <div class="filters">
+                <a href="/" class="filter-pill {{ 'active' if not selected_status }}">All <span>{{ total_count }}</span></a>
+                {% for s in statuses %}
+                <a href="/?status={{ s }}" class="filter-pill {{ 'active' if s == selected_status }}">{{ status_labels[s] }} <span>{{ status_counts[s] }}</span></a>
+                {% endfor %}
             </div>
-            {% endfor %}
+
+            {% if applications %}
+                <div class="app-list">
+                    {% for application in applications %}
+                    <div class="app-row">
+                        <div class="app-avatar">{{ application.company[0]|upper }}</div>
+                        <div class="app-main-info">
+                            <a class="app-company" href="/applications/{{ application.id }}">{{ application.company }}</a>
+                            <div class="app-title-text">{{ application.title }}</div>
+                        </div>
+                        <div class="status-select-wrap">
+                            <form action="/applications/{{ application.id }}/status" method="post">
+                                <input type="hidden" name="redirect_to" value="{{ '/?status=' + selected_status if selected_status else '/' }}">
+                                <select name="status" class="status-select status-{{ application.status }}" onchange="this.className = 'status-select status-' + this.value; this.form.submit()">
+                                    {% for s in statuses %}
+                                    <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ status_labels[s] }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        <div class="app-date">{{ application.date_applied }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% elif selected_status %}
+                <div class="empty-state">No applications with status &ldquo;{{ status_labels[selected_status] }}&rdquo;.</div>
+            {% else %}
+                <div class="empty-state">No applications yet. <a href="/applications/new">Add one</a>.</div>
+            {% endif %}
         </div>
-    {% elif selected_status %}
-        <div class="empty-state">No applications with status &ldquo;{{ selected_status }}&rdquo;.</div>
-    {% else %}
-        <div class="empty-state">No applications yet. <a href="/applications/new">Add one</a>.</div>
-    {% endif %}
+
+        <div class="list-insights">
+            <div class="card flow-card">
+                <h2 class="section-heading">Pipeline Overview</h2>
+                <div class="subtitle">Where things stand right now.</div>
+
+                {% if flow %}
+                <svg class="flow-svg" viewBox="0 0 300 {{ flow.height + 30 }}" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Applications by current status">
+                    <text x="12" y="16" class="flow-total-label">Applied &middot; {{ flow.total }}</text>
+                    <rect x="12" y="22" width="10" height="{{ flow.height }}" rx="2" fill="var(--accent)"></rect>
+
+                    {% for band in flow.bands %}
+                    <path d="M 22,{{ band.sy0 + 22 }} C 70,{{ band.sy0 + 22 }} 70,{{ band.ty0 + 22 }} 118,{{ band.ty0 + 22 }} L 118,{{ band.ty1 + 22 }} C 70,{{ band.ty1 + 22 }} 70,{{ band.sy1 + 22 }} 22,{{ band.sy1 + 22 }} Z" fill="var(--chart-{{ band.status }})"></path>
+                    {% endfor %}
+
+                    {% for band in flow.bands %}
+                    <rect x="118" y="{{ band.ty0 + 22 }}" width="10" height="{{ band.ty1 - band.ty0 }}" rx="2" fill="var(--chart-{{ band.status }})"></rect>
+                    <text x="134" y="{{ ((band.ty0 + band.ty1) / 2) + 22 + 4 }}" class="flow-label">{{ band.label }} &middot; {{ band.count }}</text>
+                    {% endfor %}
+                </svg>
+                {% else %}
+                <p class="subtitle" style="margin: 0;">Add applications to see your pipeline here.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

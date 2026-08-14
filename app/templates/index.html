@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Applications - Job Tracker{% endblock %}
+{% block content %}
+    <h1>Applications</h1>
+
+    {% if applications %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Title</th>
+                    <th>Status</th>
+                    <th>Date Applied</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                <tr>
+                    <td><a href="/applications/{{ application.id }}">{{ application.company }}</a></td>
+                    <td>{{ application.title }}</td>
+                    <td>{{ application.status }}</td>
+                    <td>{{ application.date_applied }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No applications yet. <a href="/applications/new">Add one</a>.</p>
+    {% endif %}
+{% endblock %}

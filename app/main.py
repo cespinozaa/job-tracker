@@ -1,10 +1,17 @@
-from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
-from app.database import get_resume, init_db, save_resume
+from app.database import (
+    create_application,
+    get_application,
+    get_applications,
+    get_resume,
+    init_db,
+    save_resume,
+)
 from app.parsing import parse_resume_file
 
 BASE_DIR = Path(__file__).parent
@@ -23,6 +30,40 @@ def on_startup():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/")
+def list_applications(request: Request):
+    applications = get_applications()
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "applications": applications}
+    )
+
+
+@app.get("/applications/new")
+def new_application_form(request: Request):
+    return templates.TemplateResponse("new_application.html", {"request": request})
+
+
+@app.post("/applications/new")
+def submit_new_application(
+    company: str = Form(...),
+    title: str = Form(...),
+    job_description: str = Form(...),
+    notes: str = Form(""),
+):
+    application_id = create_application(company, title, job_description, notes or None)
+    return RedirectResponse(url=f"/applications/{application_id}", status_code=303)
+
+
+@app.get("/applications/{application_id}")
+def application_detail(request: Request, application_id: int):
+    application = get_application(application_id)
+    if application is None:
+        raise HTTPException(404, "Application not found")
+    return templates.TemplateResponse(
+        "application_detail.html", {"request": request, "application": application}
+    )
 
 
 @app.get("/resume")

@@ -18,7 +18,15 @@
                 <tr>
                     <td><a href="/applications/{{ application.id }}">{{ application.company }}</a></td>
                     <td>{{ application.title }}</td>
-                    <td>{{ application.status }}</td>
+                    <td>
+                        <form action="/applications/{{ application.id }}/status" method="post">
+                            <select name="status" onchange="this.form.submit()">
+                                {% for s in statuses %}
+                                <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </td>
                     <td>{{ application.date_applied }}</td>
                 </tr>
                 {% endfor %}

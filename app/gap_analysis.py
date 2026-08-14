@@ -1,37 +1,21 @@
-import os
-
-from dotenv import load_dotenv
-from google import genai
 from google.genai import errors, types
 from pydantic import ValidationError
 
+from app.llm import LLMError, get_client
 from app.models import GapAnalysisResult
 
-load_dotenv()
-
 MODEL = "gemini-3.5-flash-lite"
-
-_client: genai.Client | None = None
 
 
 class GapAnalysisError(Exception):
     """Raised when gap analysis can't be completed, so the caller can show a clean error."""
 
 
-def _get_client() -> genai.Client:
-    global _client
-    if _client is None:
-        api_key = os.environ.get("GEMINI_API_KEY")
-        if not api_key:
-            raise GapAnalysisError(
-                "GEMINI_API_KEY is not set. Add it to a .env file in the project root."
-            )
-        _client = genai.Client(api_key=api_key)
-    return _client
-
-
 def run_gap_analysis(resume_text: str, job_description: str) -> GapAnalysisResult:
-    client = _get_client()
+    try:
+        client = get_client()
+    except LLMError as exc:
+        raise GapAnalysisError(str(exc)) from exc
 
     prompt = (
         "Compare this resume against this job posting. Identify which of "

@@ -53,3 +53,22 @@ def init_db() -> None:
     conn.executescript(SCHEMA)
     conn.commit()
     conn.close()
+
+
+def get_resume() -> sqlite3.Row | None:
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM resume ORDER BY id DESC LIMIT 1").fetchone()
+    conn.close()
+    return row
+
+
+def save_resume(filename: str, raw_text: str) -> None:
+    """Replaces the existing resume (only the latest is kept, no history)."""
+    conn = get_connection()
+    conn.execute("DELETE FROM resume")
+    conn.execute(
+        "INSERT INTO resume (filename, raw_text) VALUES (?, ?)",
+        (filename, raw_text),
+    )
+    conn.commit()
+    conn.close()

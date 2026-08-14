@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Resume - Job Tracker</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Resume</h1>
+
+    {% if resume %}
+        <p><strong>Current file:</strong> {{ resume.filename }} (uploaded {{ resume.uploaded_at }})</p>
+        <h2>Preview</h2>
+        <pre>{{ resume.raw_text[:1000] }}{% if resume.raw_text|length > 1000 %}...{% endif %}</pre>
+    {% else %}
+        <p>No resume uploaded yet.</p>
+    {% endif %}
+
+    <h2>Upload / Replace Resume</h2>
+    <form action="/resume/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".pdf,.docx" required>
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>

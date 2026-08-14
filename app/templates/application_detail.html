@@ -1,56 +1,90 @@
 {% extends "base.html" %}
-{% block title %}{{ application.company }} - Job Tracker{% endblock %}
+{% block title %}{{ application.company }} - Docket{% endblock %}
 {% block content %}
-    <h1>{{ application.title }} at {{ application.company }}</h1>
-    <p><strong>Date Applied:</strong> {{ application.date_applied }}</p>
-    {% if application.url %}
-        <p><strong>Source:</strong> <a href="{{ application.url }}" target="_blank" rel="noopener noreferrer">{{ application.url }}</a></p>
-    {% endif %}
+    <a class="back-link" href="/">
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M10 3.5L5 8l5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        All applications
+    </a>
 
-    <form action="/applications/{{ application.id }}/update" method="post">
-        <label>
-            Status
-            <select name="status">
-                {% for s in statuses %}
-                <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
-                {% endfor %}
-            </select>
-        </label>
-        <label>
-            Notes
-            <textarea name="notes" rows="4">{{ application.notes or "" }}</textarea>
-        </label>
-        <button type="submit">Save</button>
-    </form>
-
-    <h2>Gap Analysis</h2>
-    <form action="/applications/{{ application.id }}/analyze" method="post">
-        <button type="submit">{% if gap_analyses %}Re-analyze{% else %}Analyze{% endif %}</button>
-    </form>
-
-    {% if analysis_error %}
-        <p><strong>{{ analysis_error }}</strong></p>
-    {% endif %}
-
-    {% for analysis in gap_analyses %}
-        <div>
-            <p><em>{{ analysis.created_at }}</em></p>
-            <h3>Matched</h3>
-            <ul>
-                {% for keyword in analysis.matched_keywords %}
-                <li class="keyword-matched">{{ keyword }}</li>
-                {% endfor %}
-            </ul>
-            <h3>Missing</h3>
-            <ul>
-                {% for keyword in analysis.missing_keywords %}
-                <li class="keyword-missing">{{ keyword }}</li>
-                {% endfor %}
-            </ul>
-            <p>{{ analysis.suggestions }}</p>
+    <div class="detail-head">
+        <div class="detail-eyebrow">{{ application.company }}</div>
+        <h1 class="title">{{ application.title }}</h1>
+        <div class="detail-meta">
+            <span>Applied {{ application.date_applied }}</span>
+            {% if application.url %}
+                <span class="dot"></span>
+                <a href="{{ application.url }}" target="_blank" rel="noopener noreferrer">View original posting &rarr;</a>
+            {% endif %}
         </div>
-    {% endfor %}
+    </div>
 
-    <h2>Job Description</h2>
-    <pre>{{ application.job_description }}</pre>
+    <div class="card">
+        <form action="/applications/{{ application.id }}/update" method="post">
+            <div class="card-row">
+                <div class="field field-status">
+                    <label>Status</label>
+                    <select name="status" class="status-{{ application.status }}" onchange="this.className = 'status-' + this.value">
+                        {% for s in statuses %}
+                        <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Notes</label>
+                    <textarea name="notes" rows="1" placeholder="Add a note&hellip;">{{ application.notes or "" }}</textarea>
+                </div>
+            </div>
+            <div style="margin-top: 14px;">
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2 class="section-heading">
+            Gap Analysis
+            <form action="/applications/{{ application.id }}/analyze" method="post">
+                <button type="submit" class="btn btn-primary">{% if gap_analyses %}Re-analyze{% else %}Analyze{% endif %}</button>
+            </form>
+        </h2>
+
+        {% if analysis_error %}
+            <div class="error-box">{{ analysis_error }}</div>
+        {% endif %}
+
+        {% if not gap_analyses and not analysis_error %}
+            <p class="subtitle" style="margin: 0;">No analysis yet &mdash; compare this posting against your resume to see matched and missing keywords.</p>
+        {% endif %}
+
+        {% for analysis in gap_analyses %}
+            <div class="gap-run">
+                <div class="analyze-meta" style="margin-bottom: 12px;">Analyzed {{ analysis.created_at }}</div>
+
+                <div class="kw-group">
+                    <div class="kw-group-label">Matched</div>
+                    <div class="kw-chips">
+                        {% for keyword in analysis.matched_keywords %}
+                        <span class="kw-chip matched">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="kw-group">
+                    <div class="kw-group-label">Missing</div>
+                    <div class="kw-chips">
+                        {% for keyword in analysis.missing_keywords %}
+                        <span class="kw-chip missing">{{ keyword }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="suggestion-box">{{ analysis.suggestions }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="card">
+        <h2 class="section-heading">Job Description</h2>
+        <div class="jd-text">{{ application.job_description }}</div>
+    </div>
 {% endblock %}

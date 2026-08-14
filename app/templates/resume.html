@@ -1,19 +1,32 @@
 {% extends "base.html" %}
-{% block title %}Resume - Job Tracker{% endblock %}
+{% block title %}Resume - Docket{% endblock %}
 {% block content %}
-    <h1>Resume</h1>
+    <div class="page-head">
+        <div>
+            <h1 class="title">Resume</h1>
+            <div class="subtitle">Kept up to date &mdash; only the latest version is stored.</div>
+        </div>
+    </div>
 
     {% if resume %}
-        <p><strong>Current file:</strong> {{ resume.filename }} (uploaded {{ resume.uploaded_at }})</p>
-        <h2>Preview</h2>
-        <pre>{{ resume.raw_text[:1000] }}{% if resume.raw_text|length > 1000 %}...{% endif %}</pre>
-    {% else %}
-        <p>No resume uploaded yet.</p>
+        <div class="card">
+            <div class="resume-preview-head">
+                <div>
+                    <div class="resume-file-name">{{ resume.filename }}</div>
+                    <div class="resume-file-meta">Uploaded {{ resume.uploaded_at }}</div>
+                </div>
+            </div>
+            <div class="jd-text" style="max-height: 260px; overflow-y: auto;">{{ resume.raw_text[:1000] }}{% if resume.raw_text|length > 1000 %}&hellip;{% endif %}</div>
+        </div>
     {% endif %}
 
-    <h2>Upload / Replace Resume</h2>
     <form action="/resume/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept=".pdf,.docx" required>
-        <button type="submit">Upload</button>
+        <div class="dropzone">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 4v11M7 10l5-5 5 5M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="dz-title">{% if resume %}Replace your resume{% else %}Upload your resume{% endif %}</div>
+            <div class="dz-sub">PDF or DOCX &middot; replaces the current version</div>
+            <input type="file" name="file" accept=".pdf,.docx" required style="max-width: 320px; margin: 0 auto 12px; display: block;">
+            <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
     </form>
 {% endblock %}

@@ -3,20 +3,37 @@
 {% block content %}
     <h1>Add Application</h1>
 
+    <h2>Option 1: Paste a Job Posting URL</h2>
+    <form action="/applications/new/scrape" method="post">
+        <label>
+            Job Posting URL
+            <input type="url" name="url" value="{{ url or '' }}" required>
+        </label>
+        <button type="submit">Fetch</button>
+    </form>
+
+    {% if error %}
+        <p><strong>{{ error }}</strong> Paste the description manually below instead.</p>
+    {% elif scraped %}
+        <p>Fetched successfully — review the fields below before saving.</p>
+    {% endif %}
+
+    <h2>Option 2: Paste Details Manually</h2>
     <form action="/applications/new" method="post">
+        <input type="hidden" name="url" value="{{ url or '' }}">
         <label>
             Company
-            <input type="text" name="company" required>
+            <input type="text" name="company" value="{{ company or '' }}" required>
         </label>
         <br>
         <label>
             Title
-            <input type="text" name="title" required>
+            <input type="text" name="title" value="{{ title or '' }}" required>
         </label>
         <br>
         <label>
             Job Description
-            <textarea name="job_description" rows="12" required></textarea>
+            <textarea name="job_description" rows="12" required>{{ job_description or '' }}</textarea>
         </label>
         <br>
         <label>

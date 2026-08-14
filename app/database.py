@@ -77,13 +77,17 @@ def save_resume(filename: str, raw_text: str) -> None:
 
 
 def create_application(
-    company: str, title: str, job_description: str, notes: str | None = None
+    company: str,
+    title: str,
+    job_description: str,
+    url: str | None = None,
+    notes: str | None = None,
 ) -> int:
     conn = get_connection()
     cur = conn.execute(
-        "INSERT INTO applications (company, title, job_description, notes) "
-        "VALUES (?, ?, ?, ?)",
-        (company, title, job_description, notes),
+        "INSERT INTO applications (company, title, job_description, url, notes) "
+        "VALUES (?, ?, ?, ?, ?)",
+        (company, title, job_description, url, notes),
     )
     conn.commit()
     application_id = cur.lastrowid

@@ -15,6 +15,7 @@ from app.database import (
     update_application,
 )
 from app.parsing import parse_resume_file
+from app.scraping import ScrapeError, scrape_job_posting
 
 BASE_DIR = Path(__file__).parent
 
@@ -47,14 +48,39 @@ def new_application_form(request: Request):
     return templates.TemplateResponse("new_application.html", {"request": request})
 
 
+@app.post("/applications/new/scrape")
+def scrape_application_url(request: Request, url: str = Form(...)):
+    try:
+        scraped = scrape_job_posting(url)
+    except ScrapeError as exc:
+        return templates.TemplateResponse(
+            "new_application.html",
+            {"request": request, "url": url, "error": str(exc)},
+        )
+    return templates.TemplateResponse(
+        "new_application.html",
+        {
+            "request": request,
+            "url": url,
+            "company": scraped["company"],
+            "title": scraped["title"],
+            "job_description": scraped["job_description"],
+            "scraped": True,
+        },
+    )
+
+
 @app.post("/applications/new")
 def submit_new_application(
     company: str = Form(...),
     title: str = Form(...),
     job_description: str = Form(...),
+    url: str = Form(""),
     notes: str = Form(""),
 ):
-    application_id = create_application(company, title, job_description, notes or None)
+    application_id = create_application(
+        company, title, job_description, url or None, notes or None
+    )
     return RedirectResponse(url=f"/applications/{application_id}", status_code=303)
 
 

@@ -5,12 +5,14 @@ from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
 from app.database import (
+    VALID_STATUSES,
     create_application,
     get_application,
     get_applications,
     get_resume,
     init_db,
     save_resume,
+    update_application,
 )
 from app.parsing import parse_resume_file
 
@@ -62,8 +64,24 @@ def application_detail(request: Request, application_id: int):
     if application is None:
         raise HTTPException(404, "Application not found")
     return templates.TemplateResponse(
-        "application_detail.html", {"request": request, "application": application}
+        "application_detail.html",
+        {"request": request, "application": application, "statuses": VALID_STATUSES},
     )
+
+
+@app.post("/applications/{application_id}/update")
+def update_application_route(
+    application_id: int,
+    status: str = Form(...),
+    notes: str = Form(""),
+):
+    if get_application(application_id) is None:
+        raise HTTPException(404, "Application not found")
+    if status not in VALID_STATUSES:
+        raise HTTPException(400, "Invalid status")
+
+    update_application(application_id, status, notes or None)
+    return RedirectResponse(url=f"/applications/{application_id}", status_code=303)
 
 
 @app.get("/resume")

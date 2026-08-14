@@ -3,6 +3,8 @@ from pathlib import Path
 
 DB_PATH = Path(__file__).parent.parent / "job_tracker.db"
 
+VALID_STATUSES = ["applied", "interviewing", "offer", "rejected", "ghosted"]
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS resume (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,3 +107,14 @@ def get_application(application_id: int) -> sqlite3.Row | None:
     ).fetchone()
     conn.close()
     return row
+
+
+def update_application(application_id: int, status: str, notes: str | None) -> None:
+    conn = get_connection()
+    conn.execute(
+        "UPDATE applications SET status = ?, notes = ?, updated_at = CURRENT_TIMESTAMP "
+        "WHERE id = ?",
+        (status, notes, application_id),
+    )
+    conn.commit()
+    conn.close()

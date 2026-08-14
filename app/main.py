@@ -13,6 +13,7 @@ from app.database import (
     init_db,
     save_resume,
     update_application,
+    update_application_status,
 )
 from app.parsing import parse_resume_file
 from app.scraping import ScrapeError, scrape_job_posting
@@ -39,8 +40,20 @@ def health_check():
 def list_applications(request: Request):
     applications = get_applications()
     return templates.TemplateResponse(
-        "index.html", {"request": request, "applications": applications}
+        "index.html",
+        {"request": request, "applications": applications, "statuses": VALID_STATUSES},
     )
+
+
+@app.post("/applications/{application_id}/status")
+def update_status_route(application_id: int, status: str = Form(...)):
+    if get_application(application_id) is None:
+        raise HTTPException(404, "Application not found")
+    if status not in VALID_STATUSES:
+        raise HTTPException(400, "Invalid status")
+
+    update_application_status(application_id, status)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.get("/applications/new")

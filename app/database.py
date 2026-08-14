@@ -122,3 +122,13 @@ def update_application(application_id: int, status: str, notes: str | None) -> N
     )
     conn.commit()
     conn.close()
+
+
+def update_application_status(application_id: int, status: str) -> None:
+    conn = get_connection()
+    conn.execute(
+        "UPDATE applications SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        (status, application_id),
+    )
+    conn.commit()
+    conn.close()

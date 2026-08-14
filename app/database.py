@@ -132,13 +132,28 @@ def get_application(application_id: int) -> sqlite3.Row | None:
     return row
 
 
-def update_application(application_id: int, status: str, notes: str | None) -> None:
+def update_application(
+    application_id: int,
+    company: str,
+    title: str,
+    job_description: str,
+    status: str,
+    notes: str | None,
+) -> None:
     conn = get_connection()
     conn.execute(
-        "UPDATE applications SET status = ?, notes = ?, updated_at = CURRENT_TIMESTAMP "
-        "WHERE id = ?",
-        (status, notes, application_id),
+        "UPDATE applications SET company = ?, title = ?, job_description = ?, "
+        "status = ?, notes = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+        (company, title, job_description, status, notes, application_id),
     )
+    conn.commit()
+    conn.close()
+
+
+def delete_application(application_id: int) -> None:
+    conn = get_connection()
+    conn.execute("DELETE FROM gap_analysis WHERE application_id = ?", (application_id,))
+    conn.execute("DELETE FROM applications WHERE id = ?", (application_id,))
     conn.commit()
     conn.close()
 

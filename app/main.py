@@ -9,6 +9,7 @@ from app.database import (
     STATUS_LABELS,
     VALID_STATUSES,
     create_application,
+    delete_application,
     get_application,
     get_applications,
     get_gap_analyses,
@@ -198,6 +199,9 @@ def analyze_application(request: Request, application_id: int):
 @app.post("/applications/{application_id}/update")
 def update_application_route(
     application_id: int,
+    company: str = Form(...),
+    title: str = Form(...),
+    job_description: str = Form(...),
     status: str = Form(...),
     notes: str = Form(""),
 ):
@@ -206,8 +210,19 @@ def update_application_route(
     if status not in VALID_STATUSES:
         raise HTTPException(400, "Invalid status")
 
-    update_application(application_id, status, notes or None)
+    update_application(
+        application_id, company, title, job_description, status, notes or None
+    )
     return RedirectResponse(url=f"/applications/{application_id}", status_code=303)
+
+
+@app.post("/applications/{application_id}/delete")
+def delete_application_route(application_id: int):
+    if get_application(application_id) is None:
+        raise HTTPException(404, "Application not found")
+
+    delete_application(application_id)
+    return RedirectResponse(url="/", status_code=303)
 
 
 @app.get("/resume")

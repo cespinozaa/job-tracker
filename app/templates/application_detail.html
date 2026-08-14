@@ -6,20 +6,20 @@
         All applications
     </a>
 
-    <div class="detail-head">
-        <div class="detail-eyebrow">{{ application.company }}</div>
-        <h1 class="title">{{ application.title }}</h1>
-        <div class="detail-meta">
-            <span>Applied {{ application.date_applied }}</span>
-            {% if application.url %}
-                <span class="dot"></span>
-                <a href="{{ application.url }}" target="_blank" rel="noopener noreferrer">View original posting &rarr;</a>
-            {% endif %}
+    <form action="/applications/{{ application.id }}/update" method="post">
+        <div class="detail-head">
+            <input class="detail-eyebrow" name="company" value="{{ application.company }}" required aria-label="Company">
+            <input class="title" name="title" value="{{ application.title }}" required aria-label="Job title">
+            <div class="detail-meta">
+                <span>Applied {{ application.date_applied }}</span>
+                {% if application.url %}
+                    <span class="dot"></span>
+                    <a href="{{ application.url }}" target="_blank" rel="noopener noreferrer">View original posting &rarr;</a>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    <div class="card">
-        <form action="/applications/{{ application.id }}/update" method="post">
+        <div class="card">
             <div class="card-row">
                 <div class="field field-status">
                     <label>Status</label>
@@ -34,13 +34,17 @@
                     <textarea name="notes" rows="1" placeholder="Add a note&hellip;">{{ application.notes or "" }}</textarea>
                 </div>
             </div>
-            <div style="margin-top: 14px;">
-                <button type="submit" class="btn btn-primary">Save</button>
-            </div>
-        </form>
-    </div>
+        </div>
 
-    <div class="card">
+        <div class="card">
+            <h2 class="section-heading">Job Description</h2>
+            <textarea name="job_description" class="jd-text" rows="14" required>{{ application.job_description }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+    <div class="card" style="margin-top: 16px;">
         <h2 class="section-heading">
             Gap Analysis
             <form action="/applications/{{ application.id }}/analyze" method="post">
@@ -83,8 +87,7 @@
         {% endfor %}
     </div>
 
-    <div class="card">
-        <h2 class="section-heading">Job Description</h2>
-        <div class="jd-text">{{ application.job_description }}</div>
-    </div>
+    <form action="/applications/{{ application.id }}/delete" method="post" style="margin-top: 24px;" onsubmit="return confirm('Delete this application? This can&#39;t be undone.');">
+        <button type="submit" class="btn btn-danger">Delete Application</button>
+    </form>
 {% endblock %}

@@ -4,7 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
 
+from app.charts import build_status_flow
 from app.database import (
+    STATUS_LABELS,
     VALID_STATUSES,
     create_application,
     get_application,
@@ -38,6 +40,7 @@ def render(request: Request, template_name: str, active_nav: str, **context):
             "request": request,
             "active_nav": active_nav,
             "resume": get_resume(),
+            "status_labels": STATUS_LABELS,
             **context,
         },
     )
@@ -76,6 +79,7 @@ def list_applications(request: Request, status: str | None = None):
         else all_applications
     )
     awaiting_count = status_counts["applied"] + status_counts["interviewing"]
+    flow = build_status_flow(status_counts, STATUS_LABELS)
 
     return render(
         request,
@@ -87,6 +91,8 @@ def list_applications(request: Request, status: str | None = None):
         status_counts=status_counts,
         total_count=len(all_applications),
         awaiting_count=awaiting_count,
+        flow=flow,
+        wide_layout=True,
     )
 
 

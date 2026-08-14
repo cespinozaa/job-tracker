@@ -25,7 +25,7 @@
                     <label>Status</label>
                     <select name="status" class="status-{{ application.status }}" onchange="this.className = 'status-' + this.value">
                         {% for s in statuses %}
-                        <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
+                        <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ status_labels[s] }}</option>
                         {% endfor %}
                     </select>
                 </div>

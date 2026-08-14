@@ -4,7 +4,25 @@ from pathlib import Path
 
 DB_PATH = Path(__file__).parent.parent / "job_tracker.db"
 
-VALID_STATUSES = ["applied", "interviewing", "offer", "rejected", "ghosted"]
+VALID_STATUSES = [
+    "applied",
+    "completed_oa",
+    "interviewing",
+    "pending",
+    "offer",
+    "rejected",
+    "ghosted",
+]
+
+STATUS_LABELS = {
+    "applied": "Applied",
+    "completed_oa": "Completed OA",
+    "interviewing": "Interviewing",
+    "pending": "Waiting to Hear Back",
+    "offer": "Offer",
+    "rejected": "Rejected",
+    "ghosted": "Ghosted",
+}
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS resume (

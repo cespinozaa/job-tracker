@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from pathlib import Path
 
@@ -132,3 +133,47 @@ def update_application_status(application_id: int, status: str) -> None:
     )
     conn.commit()
     conn.close()
+
+
+def save_gap_analysis(
+    application_id: int,
+    matched_keywords: list[str],
+    missing_keywords: list[str],
+    suggestions: str,
+) -> int:
+    conn = get_connection()
+    cur = conn.execute(
+        "INSERT INTO gap_analysis "
+        "(application_id, matched_keywords, missing_keywords, suggestions) "
+        "VALUES (?, ?, ?, ?)",
+        (
+            application_id,
+            json.dumps(matched_keywords),
+            json.dumps(missing_keywords),
+            suggestions,
+        ),
+    )
+    conn.commit()
+    gap_analysis_id = cur.lastrowid
+    conn.close()
+    return gap_analysis_id
+
+
+def get_gap_analyses(application_id: int) -> list[dict]:
+    """Returns all analysis runs for an application, most recent first."""
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT * FROM gap_analysis WHERE application_id = ? ORDER BY created_at DESC",
+        (application_id,),
+    ).fetchall()
+    conn.close()
+    return [
+        {
+            "id": row["id"],
+            "matched_keywords": json.loads(row["matched_keywords"]),
+            "missing_keywords": json.loads(row["missing_keywords"]),
+            "suggestions": row["suggestions"],
+            "created_at": row["created_at"],
+        }
+        for row in rows
+    ]

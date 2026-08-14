@@ -25,6 +25,34 @@
         <button type="submit">Save</button>
     </form>
 
+    <h2>Gap Analysis</h2>
+    <form action="/applications/{{ application.id }}/analyze" method="post">
+        <button type="submit">{% if gap_analyses %}Re-analyze{% else %}Analyze{% endif %}</button>
+    </form>
+
+    {% if analysis_error %}
+        <p><strong>{{ analysis_error }}</strong></p>
+    {% endif %}
+
+    {% for analysis in gap_analyses %}
+        <div>
+            <p><em>{{ analysis.created_at }}</em></p>
+            <h3>Matched</h3>
+            <ul>
+                {% for keyword in analysis.matched_keywords %}
+                <li style="color: green;">{{ keyword }}</li>
+                {% endfor %}
+            </ul>
+            <h3>Missing</h3>
+            <ul>
+                {% for keyword in analysis.missing_keywords %}
+                <li style="color: red;">{{ keyword }}</li>
+                {% endfor %}
+            </ul>
+            <p>{{ analysis.suggestions }}</p>
+        </div>
+    {% endfor %}
+
     <h2>Job Description</h2>
     <pre>{{ application.job_description }}</pre>
 {% endblock %}

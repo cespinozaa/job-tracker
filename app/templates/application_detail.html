@@ -16,12 +16,10 @@
                 {% endfor %}
             </select>
         </label>
-        <br>
         <label>
             Notes
             <textarea name="notes" rows="4">{{ application.notes or "" }}</textarea>
         </label>
-        <br>
         <button type="submit">Save</button>
     </form>
 
@@ -40,13 +38,13 @@
             <h3>Matched</h3>
             <ul>
                 {% for keyword in analysis.matched_keywords %}
-                <li style="color: green;">{{ keyword }}</li>
+                <li class="keyword-matched">{{ keyword }}</li>
                 {% endfor %}
             </ul>
             <h3>Missing</h3>
             <ul>
                 {% for keyword in analysis.missing_keywords %}
-                <li style="color: red;">{{ keyword }}</li>
+                <li class="keyword-missing">{{ keyword }}</li>
                 {% endfor %}
             </ul>
             <p>{{ analysis.suggestions }}</p>

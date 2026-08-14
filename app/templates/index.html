@@ -3,6 +3,13 @@
 {% block content %}
     <h1>Applications</h1>
 
+    <div class="filters">
+        <a href="/" class="{{ 'active' if not selected_status }}">All</a>
+        {% for s in statuses %}
+        <a href="/?status={{ s }}" class="{{ 'active' if s == selected_status }}">{{ s }}</a>
+        {% endfor %}
+    </div>
+
     {% if applications %}
         <table>
             <thead>
@@ -20,6 +27,7 @@
                     <td>{{ application.title }}</td>
                     <td>
                         <form action="/applications/{{ application.id }}/status" method="post">
+                            <input type="hidden" name="redirect_to" value="{{ '/?status=' + selected_status if selected_status else '/' }}">
                             <select name="status" onchange="this.form.submit()">
                                 {% for s in statuses %}
                                 <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
@@ -32,6 +40,8 @@
                 {% endfor %}
             </tbody>
         </table>
+    {% elif selected_status %}
+        <p>No applications with status "{{ selected_status }}".</p>
     {% else %}
         <p>No applications yet. <a href="/applications/new">Add one</a>.</p>
     {% endif %}

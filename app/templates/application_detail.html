@@ -3,6 +3,9 @@
 {% block content %}
     <h1>{{ application.title }} at {{ application.company }}</h1>
     <p><strong>Date Applied:</strong> {{ application.date_applied }}</p>
+    {% if application.url %}
+        <p><strong>Source:</strong> <a href="{{ application.url }}" target="_blank" rel="noopener noreferrer">{{ application.url }}</a></p>
+    {% endif %}
 
     <form action="/applications/{{ application.id }}/update" method="post">
         <label>

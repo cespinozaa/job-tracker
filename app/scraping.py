@@ -5,6 +5,15 @@ USER_AGENT = "Mozilla/5.0 (compatible; JobTrackerBot/1.0)"
 REQUEST_TIMEOUT = 10
 MIN_DESCRIPTION_LENGTH = 50
 
+UNAVAILABLE_PHRASES = [
+    "no longer available",
+    "posting has expired",
+    "position has been filled",
+    "job has been closed",
+    "no longer accepting applications",
+    "this job is no longer",
+]
+
 
 class ScrapeError(Exception):
     """Raised when a posting can't be scraped, so the caller can fall back to manual paste."""
@@ -31,6 +40,8 @@ def scrape_job_posting(url: str) -> dict:
     description = _extract_description(soup)
     if len(description) < MIN_DESCRIPTION_LENGTH:
         raise ScrapeError("Couldn't find usable job description content on this page.")
+    if _looks_unavailable(description):
+        raise ScrapeError("This posting looks like it's no longer available.")
 
     return {
         "title": _extract_title(soup),
@@ -67,3 +78,8 @@ def _extract_description(soup: BeautifulSoup) -> str:
     text = candidate.get_text(separator="\n", strip=True)
     lines = [line for line in text.splitlines() if line.strip()]
     return "\n".join(lines)
+
+
+def _looks_unavailable(description: str) -> bool:
+    lowered = description.lower()
+    return any(phrase in lowered for phrase in UNAVAILABLE_PHRASES)

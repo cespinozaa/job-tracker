@@ -1,43 +1,57 @@
 {% extends "base.html" %}
-{% block title %}Add Application - Job Tracker{% endblock %}
+{% block title %}Add Application - Docket{% endblock %}
 {% block content %}
-    <h1>Add Application</h1>
+    <div class="page-head">
+        <div>
+            <h1 class="title">Add Application</h1>
+            <div class="subtitle">Paste a link and we'll try to fill this in, or enter it yourself.</div>
+        </div>
+    </div>
 
-    <h2>Option 1: Paste a Job Posting URL</h2>
-    <form action="/applications/new/scrape" method="post">
-        <label>
-            Job Posting URL
-            <input type="url" name="url" value="{{ url or '' }}" required>
-        </label>
-        <button type="submit">Fetch</button>
-    </form>
+    <div class="path-grid">
+        <div class="path-card">
+            <div class="path-eyebrow">Option 1</div>
+            <h2 class="path-title">Paste a link</h2>
+            <div class="path-desc">Works for most postings. If a site blocks scraping, you'll drop straight into the manual form below.</div>
+            <form class="field-stack" action="/applications/new/scrape" method="post">
+                <div class="field">
+                    <label>Posting URL</label>
+                    <input type="url" name="url" value="{{ url or '' }}" placeholder="https://company.com/careers/role" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Fetch details</button>
+            </form>
 
-    {% if error %}
-        <p><strong>{{ error }}</strong> Paste the description manually below instead.</p>
-    {% elif scraped %}
-        <p>Fetched successfully — review the fields below before saving.</p>
-    {% endif %}
+            {% if error %}
+                <div class="error-box" style="margin-top: 14px; margin-bottom: 0;">{{ error }} Paste the description manually instead.</div>
+            {% elif scraped %}
+                <div class="suggestion-box" style="margin-top: 14px;">Fetched successfully &mdash; review the fields before saving.</div>
+            {% endif %}
+        </div>
 
-    <h2>Option 2: Paste Details Manually</h2>
-    <form action="/applications/new" method="post">
-        <input type="hidden" name="url" value="{{ url or '' }}">
-        <label>
-            Company
-            <input type="text" name="company" value="{{ company or '' }}" required>
-        </label>
-        <label>
-            Title
-            <input type="text" name="title" value="{{ title or '' }}" required>
-        </label>
-        <label>
-            Job Description
-            <textarea name="job_description" rows="12" required>{{ job_description or '' }}</textarea>
-        </label>
-        <label>
-            Notes
-            <textarea name="notes" rows="4"></textarea>
-        </label>
-        <br>
-        <button type="submit">Save</button>
-    </form>
+        <div class="path-card">
+            <div class="path-eyebrow">Option 2</div>
+            <h2 class="path-title">Enter manually</h2>
+            <div class="path-desc">Paste the role details straight from the posting.</div>
+            <form class="field-stack" action="/applications/new" method="post">
+                <input type="hidden" name="url" value="{{ url or '' }}">
+                <div class="field">
+                    <label>Company</label>
+                    <input type="text" name="company" value="{{ company or '' }}" placeholder="e.g. Figma" required>
+                </div>
+                <div class="field">
+                    <label>Title</label>
+                    <input type="text" name="title" value="{{ title or '' }}" placeholder="e.g. Frontend Engineer" required>
+                </div>
+                <div class="field">
+                    <label>Description</label>
+                    <textarea name="job_description" rows="6" placeholder="Paste the job description&hellip;" required>{{ job_description or '' }}</textarea>
+                </div>
+                <div class="field">
+                    <label>Notes</label>
+                    <textarea name="notes" rows="2" placeholder="Optional"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="align-self: flex-start;">Save Application</button>
+            </form>
+        </div>
+    </div>
 {% endblock %}

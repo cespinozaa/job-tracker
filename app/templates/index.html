@@ -1,48 +1,53 @@
 {% extends "base.html" %}
-{% block title %}Applications - Job Tracker{% endblock %}
+{% block title %}Applications - Docket{% endblock %}
 {% block content %}
-    <h1>Applications</h1>
+    <div class="page-head">
+        <div>
+            <h1 class="title">Applications</h1>
+            <div class="subtitle">
+                {{ total_count }} tracked
+                {% if awaiting_count %}&middot; {{ awaiting_count }} awaiting a response{% endif %}
+            </div>
+        </div>
+        <a class="btn btn-primary" href="/applications/new">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2.5v11M2.5 8h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Add Application
+        </a>
+    </div>
 
     <div class="filters">
-        <a href="/" class="{{ 'active' if not selected_status }}">All</a>
+        <a href="/" class="filter-pill {{ 'active' if not selected_status }}">All <span>{{ total_count }}</span></a>
         {% for s in statuses %}
-        <a href="/?status={{ s }}" class="{{ 'active' if s == selected_status }}">{{ s }}</a>
+        <a href="/?status={{ s }}" class="filter-pill {{ 'active' if s == selected_status }}">{{ s }} <span>{{ status_counts[s] }}</span></a>
         {% endfor %}
     </div>
 
     {% if applications %}
-        <table>
-            <thead>
-                <tr>
-                    <th>Company</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Date Applied</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for application in applications %}
-                <tr>
-                    <td><a href="/applications/{{ application.id }}">{{ application.company }}</a></td>
-                    <td>{{ application.title }}</td>
-                    <td>
-                        <form action="/applications/{{ application.id }}/status" method="post">
-                            <input type="hidden" name="redirect_to" value="{{ '/?status=' + selected_status if selected_status else '/' }}">
-                            <select name="status" onchange="this.form.submit()">
-                                {% for s in statuses %}
-                                <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
-                                {% endfor %}
-                            </select>
-                        </form>
-                    </td>
-                    <td>{{ application.date_applied }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="app-list">
+            {% for application in applications %}
+            <div class="app-row">
+                <div class="app-avatar">{{ application.company[0]|upper }}</div>
+                <div class="app-main-info">
+                    <a class="app-company" href="/applications/{{ application.id }}">{{ application.company }}</a>
+                    <div class="app-title-text">{{ application.title }}</div>
+                </div>
+                <div class="status-select-wrap">
+                    <form action="/applications/{{ application.id }}/status" method="post">
+                        <input type="hidden" name="redirect_to" value="{{ '/?status=' + selected_status if selected_status else '/' }}">
+                        <select name="status" class="status-select status-{{ application.status }}" onchange="this.className = 'status-select status-' + this.value; this.form.submit()">
+                            {% for s in statuses %}
+                            <option value="{{ s }}" {% if s == application.status %}selected{% endif %}>{{ s }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+                </div>
+                <div class="app-date">{{ application.date_applied }}</div>
+            </div>
+            {% endfor %}
+        </div>
     {% elif selected_status %}
-        <p>No applications with status "{{ selected_status }}".</p>
+        <div class="empty-state">No applications with status &ldquo;{{ selected_status }}&rdquo;.</div>
     {% else %}
-        <p>No applications yet. <a href="/applications/new">Add one</a>.</p>
+        <div class="empty-state">No applications yet. <a href="/applications/new">Add one</a>.</div>
     {% endif %}
 {% endblock %}

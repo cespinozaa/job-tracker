@@ -29,6 +29,20 @@ templates = Jinja2Templates(directory=BASE_DIR / "templates")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 
 
+def render(request: Request, template_name: str, active_nav: str, **context):
+    """Renders a template with the sidebar context (resume status, active nav
+    item) every page needs, so routes don't each have to wire it up."""
+    return templates.TemplateResponse(
+        template_name,
+        {
+            "request": request,
+            "active_nav": active_nav,
+            "resume": get_resume(),
+            **context,
+        },
+    )
+
+
 @app.on_event("startup")
 def on_startup():
     init_db()
@@ -51,15 +65,28 @@ def list_applications(request: Request, status: str | None = None):
     if status is not None and status not in VALID_STATUSES:
         raise HTTPException(400, "Invalid status filter")
 
-    applications = get_applications(status)
-    return templates.TemplateResponse(
+    all_applications = get_applications()
+    status_counts = {s: 0 for s in VALID_STATUSES}
+    for application in all_applications:
+        status_counts[application["status"]] += 1
+
+    applications = (
+        [a for a in all_applications if a["status"] == status]
+        if status
+        else all_applications
+    )
+    awaiting_count = status_counts["applied"] + status_counts["interviewing"]
+
+    return render(
+        request,
         "index.html",
-        {
-            "request": request,
-            "applications": applications,
-            "statuses": VALID_STATUSES,
-            "selected_status": status,
-        },
+        "list",
+        applications=applications,
+        statuses=VALID_STATUSES,
+        selected_status=status,
+        status_counts=status_counts,
+        total_count=len(all_applications),
+        awaiting_count=awaiting_count,
     )
 
 
@@ -78,7 +105,7 @@ def update_status_route(
 
 @app.get("/applications/new")
 def new_application_form(request: Request):
-    return templates.TemplateResponse("new_application.html", {"request": request})
+    return render(request, "new_application.html", "new")
 
 
 @app.post("/applications/new/scrape")
@@ -86,20 +113,16 @@ def scrape_application_url(request: Request, url: str = Form(...)):
     try:
         scraped = scrape_job_posting(url)
     except ScrapeError as exc:
-        return templates.TemplateResponse(
-            "new_application.html",
-            {"request": request, "url": url, "error": str(exc)},
-        )
-    return templates.TemplateResponse(
+        return render(request, "new_application.html", "new", url=url, error=str(exc))
+    return render(
+        request,
         "new_application.html",
-        {
-            "request": request,
-            "url": url,
-            "company": scraped["company"],
-            "title": scraped["title"],
-            "job_description": scraped["job_description"],
-            "scraped": True,
-        },
+        "new",
+        url=url,
+        company=scraped["company"],
+        title=scraped["title"],
+        job_description=scraped["job_description"],
+        scraped=True,
     )
 
 
@@ -123,14 +146,13 @@ def application_detail(request: Request, application_id: int):
     if application is None:
         raise HTTPException(404, "Application not found")
     gap_analyses = get_gap_analyses(application_id)
-    return templates.TemplateResponse(
+    return render(
+        request,
         "application_detail.html",
-        {
-            "request": request,
-            "application": application,
-            "statuses": VALID_STATUSES,
-            "gap_analyses": gap_analyses,
-        },
+        "list",
+        application=application,
+        statuses=VALID_STATUSES,
+        gap_analyses=gap_analyses,
     )
 
 
@@ -148,15 +170,14 @@ def analyze_application(request: Request, application_id: int):
         result = run_gap_analysis(resume["raw_text"], application["job_description"])
     except GapAnalysisError as exc:
         gap_analyses = get_gap_analyses(application_id)
-        return templates.TemplateResponse(
+        return render(
+            request,
             "application_detail.html",
-            {
-                "request": request,
-                "application": application,
-                "statuses": VALID_STATUSES,
-                "gap_analyses": gap_analyses,
-                "analysis_error": str(exc),
-            },
+            "list",
+            application=application,
+            statuses=VALID_STATUSES,
+            gap_analyses=gap_analyses,
+            analysis_error=str(exc),
         )
 
     save_gap_analysis(
@@ -185,10 +206,7 @@ def update_application_route(
 
 @app.get("/resume")
 def resume_page(request: Request):
-    resume = get_resume()
-    return templates.TemplateResponse(
-        "resume.html", {"request": request, "resume": resume}
-    )
+    return render(request, "resume.html", "resume")
 
 
 @app.post("/resume/upload")

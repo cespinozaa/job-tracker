@@ -12,6 +12,10 @@ The project is branded "Docket" internally (a docket being, literally, a list of
 
 <img src="https://github.com/user-attachments/assets/71083e94-6109-4ae3-a7bb-8b6855453050" width="750">
 
+<img src="https://github.com/user-attachments/assets/67ac53e9-a390-4252-857c-ef497ebfbf0a" width="750">
+
+
+
 
 ## Tech Stack ⚙️
 

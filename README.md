@@ -4,7 +4,7 @@
 
 This is a local-first web app I built to stop losing track of my job search across a dozen browser tabs and a half-updated spreadsheet. It tracks every application in one place, can pull the title/company/description straight from a posting URL, and uses an LLM to compare a job posting against my resume so I know how to tailor it before I apply. The LLM shows a 'gap analysis' meaning which job keywords my resume already has, which ones its missing, as well as a short paragraph with advice on what to focus on when tailoring my resume. It's designed to run on my own machine, not to be deployed publicly as there's no login system, no hosting, just a local SQLite file.
 
-The UI is branded "Docket" internally (a docket being, literally, a list of matters to track), though the project itself is just called the Job Application Tracker.
+The project is branded "Docket" internally (a docket being, literally, a list of matters to track), though the project itself is just called the Job Application Tracker.
 
 ## Tech Stack ⚙️
 
@@ -84,4 +84,4 @@ Then create a `.env` file in the project root with your Gemini key:
 GEMINI_API_KEY=your-key-here
 ```
 
-Open **http://localhost:8000** in your browser. A `job_tracker.db` SQLite file is created automatically on first run — nothing else to set up.
+Open **http://localhost:8000** in your browser. A `job_tracker.db` SQLite file is created automatically on first run, nothing else to set up.

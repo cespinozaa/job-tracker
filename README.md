@@ -6,6 +6,10 @@ This is a local-first web app I built to stop losing track of my job search acro
 
 The project is branded "Docket" internally (a docket being, literally, a list of matters to track), though the project itself is just called the Job Application Tracker.
 
+## Images
+
+<img src="https://github.com/user-attachments/assets/caba0e8c-ec3a-41e4-912f-051dd1d59920" width="350">
+
 ## Tech Stack ⚙️
 
 - Python

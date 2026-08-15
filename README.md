@@ -14,7 +14,11 @@ The project is branded "Docket" internally (a docket being, literally, a list of
 
 <img src="https://github.com/user-attachments/assets/67ac53e9-a390-4252-857c-ef497ebfbf0a" width="750">
 
+## Project in Action
 
+<img src="https://github.com/user-attachments/assets/e2249bae-d508-4612-90bc-922a71e6829f" width="750">
+
+<img src="https://github.com/user-attachments/assets/376d1e4d-f525-42d3-9107-cf0539070949" width="750">
 
 
 ## Tech Stack ⚙️

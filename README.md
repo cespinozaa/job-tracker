@@ -8,7 +8,7 @@ The project is branded "Docket" internally (a docket being, literally, a list of
 
 ## Images
 
-<img src="https://github.com/user-attachments/assets/caba0e8c-ec3a-41e4-912f-051dd1d59920" width="350">
+<img src="https://github.com/user-attachments/assets/caba0e8c-ec3a-41e4-912f-051dd1d59920" width="550">
 
 ## Tech Stack ⚙️
 

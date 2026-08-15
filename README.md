@@ -10,16 +10,24 @@ The project is branded "Docket" internally (a docket being, literally, a list of
 
 <img src="https://github.com/user-attachments/assets/caba0e8c-ec3a-41e4-912f-051dd1d59920" width="850">
 
+<br>
+
 <img src="https://github.com/user-attachments/assets/71083e94-6109-4ae3-a7bb-8b6855453050" width="850">
 
+<br>
+
 <img src="https://github.com/user-attachments/assets/67ac53e9-a390-4252-857c-ef497ebfbf0a" width="850">
+
+<br>
 
 ## Project in Action
 - adding an application + gap analysis
 <img src="https://github.com/user-attachments/assets/e2249bae-d508-4612-90bc-922a71e6829f" width="850">
 
+<br>
+
 - changing job application status + pipeline overview changes
-<img src="https://github.com/user-attachments/assets/376d1e4d-f525-42d3-9107-cf0539070949" width="750">
+<img src="https://github.com/user-attachments/assets/376d1e4d-f525-42d3-9107-cf0539070949" width="850">
 
 
 ## Tech Stack ⚙️
